@@ -1,0 +1,215 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Дипломы</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar-logo">
+      <span class="logo"></span>
+      <span class="navbar-title">Ваше имя</span>
+    </div>
+    <nav class="navbar-links">
+      <a href="index.html">Главная</a>
+      <a href="cv.html">Резюме</a>
+      <a href="projects.html">Проекты</a>
+      <a href="certificates.html">Дипломы</a>
+      <a href="about-me.html">Обо мне</a>
+      <a href="contact.html">Контакты</a>
+      <button onclick="toggleLanguage()" class="lang-button">
+        <img src="flags/svg/ru.svg" alt="Russian" class="flag-icon">
+      </button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="content">
+      <h1>Дипломы</h1>
+      <p>Здесь будут ваши дипломы и сертификаты...</p>
+    </section>
+    <section class="chat-widget" id="chatWidget">
+      <div class="chat-header" onclick="toggleChat()">
+        <span class="chat-logo">nAI</span>
+        <h1 class="chat-title">nikol.AI</h1>
+        <p class="chat-subtitle">Ваш гид по портфолио</p>
+      </div>
+      <div class="chat-body" id="chatBody" style="display: none;">
+        <!-- Chat messages will be added via script -->
+      </div>
+      <div class="chat-footer" style="display: none;">
+        <input type="text" id="chatInput" placeholder="Задайте вопрос о дипломах..." onkeypress="if(event.key === 'Enter') sendMessage()">
+        <button onclick="sendMessage()">Отправить</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const translations = {
+      ru: {
+        title: "Дипломы",
+        navbar: ["Главная", "Резюме", "Проекты", "Дипломы", "Обо мне", "Контакты"],
+        chatTitle: "nikol.AI",
+        chatSubtitle: "Ваш гид по портфолио",
+        chatWelcome: "Привет, я nikol.AI 🤖 — ваш помощник! Задайте вопрос о дипломах!",
+        chatPlaceholder: "Задайте вопрос о дипломах...",
+        sendButton: "Отправить",
+        flag: "flags/svg/ru.svg"
+      },
+      en: {
+        title: "Diplomas",
+        navbar: ["Home", "CV", "Projects", "Diplomas", "About Me", "Contact"],
+        chatTitle: "nikol.AI",
+        chatSubtitle: "Your guide to my portfolio",
+        chatWelcome: "Hi, I’m nikol.AI 🤖 — your assistant! Ask me about diplomas!",
+        chatPlaceholder: "Ask me about diplomas...",
+        sendButton: "Send",
+        flag: "flags/svg/gb.svg"
+      },
+      zh: {
+        title: "文凭",
+        navbar: ["首页", "简历", "项目", "文凭", "关于我", "联系方式"],
+        chatTitle: "nikol.AI",
+        chatSubtitle: "我的作品集向导",
+        chatWelcome: "你好，我是 nikol.AI 🤖 — 您的助手！询问我关于文凭的问题！",
+        chatPlaceholder: "询问我关于文凭的内容...",
+        sendButton: "发送",
+        flag: "flags/svg/cn.svg"
+      }
+    };
+
+    let isChatOpen = false;
+
+    function setLanguage(lang) {
+      document.documentElement.lang = lang;
+      const title = document.querySelector('title');
+      const navbarLinks = document.querySelectorAll('.navbar-links a');
+      const chatTitle = document.querySelector('.chat-title');
+      const chatSubtitle = document.querySelector('.chat-subtitle');
+      const chatInput = document.getElementById('chatInput');
+      const sendButton = document.querySelector('.chat-footer button');
+      const languageButton = document.querySelector('.lang-button img');
+
+      title.textContent = translations[lang].title;
+      navbarLinks.forEach((link, index) => link.textContent = translations[lang].navbar[index]);
+      chatTitle.textContent = translations[lang].chatTitle;
+      chatSubtitle.textContent = translations[lang].chatSubtitle;
+      chatInput.placeholder = translations[lang].chatPlaceholder;
+      sendButton.textContent = translations[lang].sendButton;
+      languageButton.src = translations[lang].flag;
+      languageButton.alt = `${lang.toUpperCase()} Flag`;
+
+      if (isChatOpen) {
+        const chatBody = document.getElementById('chatBody');
+        chatBody.innerHTML = ''; // Clear chat body
+        const welcomeMessage = document.createElement('div');
+        welcomeMessage.className = 'chat-message bot';
+        welcomeMessage.textContent = translations[lang].chatWelcome;
+        chatBody.appendChild(welcomeMessage);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+
+      localStorage.setItem('language', lang);
+    }
+
+    function toggleLanguage() {
+      const currentLang = document.documentElement.lang;
+      const langs = ['ru', 'en', 'zh'];
+      const nextLang = langs[(langs.indexOf(currentLang) + 1) % langs.length];
+      setLanguage(nextLang);
+    }
+
+    function toggleChat() {
+      const chatBody = document.getElementById('chatBody');
+      const chatFooter = document.querySelector('.chat-footer');
+      isChatOpen = !isChatOpen;
+      chatBody.style.display = isChatOpen ? 'block' : 'none';
+      chatFooter.style.display = isChatOpen ? 'flex' : 'none';
+      if (isChatOpen && chatBody.innerHTML === '') {
+        const lang = document.documentElement.lang;
+        const welcomeMessage = document.createElement('div');
+        welcomeMessage.className = 'chat-message bot';
+        welcomeMessage.textContent = translations[lang].chatWelcome;
+        chatBody.appendChild(welcomeMessage);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const chatBody = document.getElementById('chatBody');
+      const message = input.value.trim();
+      const lang = document.documentElement.lang;
+
+      if (message) {
+        // Add user message
+        const userMessage = document.createElement('div');
+        userMessage.className = 'chat-message user';
+        userMessage.textContent = message;
+        chatBody.appendChild(userMessage);
+
+        // Mock bot response in the current language
+        const botResponse = {
+          ru: 'Спасибо за ваш вопрос! Я пока подключаюсь к серверу, но скоро отвечу!',
+          en: 'Thanks for your question! I’m still connecting to the backend, but I’ll answer soon!',
+          zh: '感谢您的提问！我还在连接后端，但很快就会回复！'
+        };
+        const botMessage = document.createElement('div');
+        botMessage.className = 'chat-message bot';
+        botMessage.textContent = botResponse[lang];
+        chatBody.appendChild(botMessage);
+
+        // Clear input and scroll
+        input.value = '';
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+    }
+
+    window.onload = function() {
+      const lang = localStorage.getItem('language') || 'ru'; // Default to Russian
+      setLanguage(lang);
+    };
+  </script>
+</body>
+</html>

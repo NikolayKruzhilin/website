@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ваше имя</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar-logo">
+      <span class="logo"></span>
+      <span class="navbar-title">Ваше имя</span>
+    </div>
+    <nav class="navbar-links">
+      <a href="index.html">Главная</a>
+      <a href="cv.html">Резюме</a>
+      <a href="projects.html">Проекты</a>
+      <a href="certificates.html">Дипломы</a>
+      <a href="about-me.html">Обо мне</a>
+      <a href="contact.html">Контакты</a>
+      <button onclick="toggleLanguage()" class="lang-button">
+        <img src="flags/svg/ru.svg" alt="Russian" class="flag-icon">
+      </button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="chat-main">
+      <div class="chat-header">
+        <span class="chat-logo">nAI</span>
+        <h1 class="chat-title">nikol.AI</h1>
+        <p class="chat-subtitle">Ваш гид по портфолио</p>
+      </div>
+      <div class="chat-body" id="chatBody"></div>
+      <div class="chat-footer">
+        <input type="text" id="chatInput" placeholder="Задайте вопрос о проектах, резюме или что-то еще..." onkeypress="if(event.key === 'Enter') sendMessage()">
+        <button onclick="sendMessage()">Отправить</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const translations = {
+      ru: {
+        title: "Ваше имя",
+        navbar: ["Главная", "Резюме", "Проекты", "Дипломы", "Обо мне", "Контакты"],
+        chatTitle: "nikol.AI",
+        chatSubtitle: "Ваш гид по портфолио",
+        chatWelcome: "Привет, я nikol.AI 🤖 — цифровой помощник Николая! Интересуетесь портфолио, опытом или резюме? Просто спросите!",
+        chatPlaceholder: "Задайте вопрос о проектах, резюме или что-то еще...",
+        sendButton: "Отправить",
+        flag: "flags/svg/ru.svg"
+      },
+      en: {
+        title: "Your Name",
+        navbar: ["Home", "CV", "Projects", "Diplomas", "About Me", "Contact"],
+        chatTitle: "nikol.AI",
+        chatSubtitle: "Your guide to my portfolio",
+        chatWelcome: "Hi, I’m nikol.AI 🤖 — Nikolay's digital assistant! Curious about the portfolio, experience, or CV? Just ask!",
+        chatPlaceholder: "Ask me about Nikolay's projects, CV, or anything else...",
+        sendButton: "Send",
+        flag: "flags/svg/gb.svg"
+      },
+      zh: {
+        title: "您的姓名",
+        navbar: ["首页", "简历", "项目", "文凭", "关于我", "联系方式"],
+        chatTitle: "nikol.AI",
+        chatSubtitle: "我的作品集向导",
+        chatWelcome: "你好，我是 nikol.AI 🤖 — 尼古拉的数字助手！想了解作品集、经验或简历？请告诉我！",
+        chatPlaceholder: "询问尼古拉的项目、简历或任何其他内容...",
+        sendButton: "发送",
+        flag: "flags/svg/cn.svg"
+      }
+    };
+
+    function setLanguage(lang) {
+      document.documentElement.lang = lang;
+      const title = document.querySelector('title');
+      const navbarLinks = document.querySelectorAll('.navbar-links a');
+      const chatTitle = document.querySelector('.chat-title');
+      const chatSubtitle = document.querySelector('.chat-subtitle');
+      const chatInput = document.getElementById('chatInput');
+      const sendButton = document.querySelector('.chat-footer button');
+      const languageButton = document.querySelector('.lang-button img');
+
+      title.textContent = translations[lang].title;
+      navbarLinks.forEach((link, index) => link.textContent = translations[lang].navbar[index]);
+      chatTitle.textContent = translations[lang].chatTitle;
+      chatSubtitle.textContent = translations[lang].chatSubtitle;
+      chatInput.placeholder = translations[lang].chatPlaceholder;
+      sendButton.textContent = translations[lang].sendButton;
+      languageButton.src = translations[lang].flag;
+      languageButton.alt = `${lang.toUpperCase()} Flag`;
+
+      const chatBody = document.getElementById('chatBody');
+      chatBody.innerHTML = '';
+      const welcomeMessage = document.createElement('div');
+      welcomeMessage.className = 'chat-message bot';
+      welcomeMessage.textContent = translations[lang].chatWelcome;
+      chatBody.appendChild(welcomeMessage);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function toggleLanguage() {
+      const currentLang = document.documentElement.lang;
+      const langs = ['ru', 'en', 'zh'];
+      const nextLang = langs[(langs.indexOf(currentLang) + 1) % langs.length];
+      setLanguage(nextLang);
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const chatBody = document.getElementById('chatBody');
+      const message = input.value.trim();
+      const lang = document.documentElement.lang;
+
+      if (message) {
+        const userMessage = document.createElement('div');
+        userMessage.className = 'chat-message user';
+        userMessage.textContent = message;
+        chatBody.appendChild(userMessage);
+
+        const botResponse = {
+          ru: 'Спасибо за ваш вопрос! Я пока подключаюсь к серверу, но скоро отвечу!',
+          en: 'Thanks for your question! I’m still connecting to the backend, but I’ll answer soon!',
+          zh: '感谢您的提问！我还在连接后端，但很快就会回复！'
+        };
+        const botMessage = document.createElement('div');
+        botMessage.className = 'chat-message bot';
+        botMessage.textContent = botResponse[lang];
+        chatBody.appendChild(botMessage);
+
+        input.value = '';
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+    }
+
+    window.onload = function() {
+      setLanguage(localStorage.getItem('language') || 'ru');
+    };
+  </script>
+</body>
+</html>
