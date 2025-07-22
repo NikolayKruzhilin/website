@@ -121,18 +121,39 @@
         userMessage.textContent = message;
         chatBody.appendChild(userMessage);
 
-        const botResponse = {
-          ru: 'Спасибо за ваш вопрос! Я пока подключаюсь к серверу, но скоро отвечу!',
-          en: 'Thanks for your question! I’m still connecting to the backend, but I’ll answer soon!',
-          zh: '感谢您的提问！我还在连接后端，但很快就会回复！'
-        };
-        const botMessage = document.createElement('div');
-        botMessage.className = 'chat-message bot';
-        botMessage.textContent = botResponse[lang];
-        chatBody.appendChild(botMessage);
+        // Send message to n8n via ngrok
+        fetch("https://11dded891c17.ngrok-free.app/webhook/chatbot", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message })
+        })
+        .then(response => response.json())
+        .then(data => {
+          const botMessage = document.createElement('div');
+          botMessage.className = 'chat-message bot';
+          botMessage.textContent = data.reply || {
+            ru: "🤖 Не удалось получить ответ от сервера",
+            en: "🤖 Failed to receive reply from server",
+            zh: "🤖 未能从服务器获取回应"
+          }[lang];
+          chatBody.appendChild(botMessage);
+          chatBody.scrollTop = chatBody.scrollHeight;
+        })
+        .catch(error => {
+          const botMessage = document.createElement('div');
+          botMessage.className = 'chat-message bot';
+          botMessage.textContent = {
+            ru: "⚠️ Ошибка подключения к серверу",
+            en: "⚠️ Server connection error",
+            zh: "⚠️ 与服务器连接错误"
+          }[lang];
+          chatBody.appendChild(botMessage);
+          console.error("Fetch error:", error);
+        });
 
         input.value = '';
-        chatBody.scrollTop = chatBody.scrollHeight;
       }
     }
 
@@ -142,3 +163,4 @@
   </script>
 </body>
 </html>
+
