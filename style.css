@@ -7,20 +7,29 @@
   --radius: 4px;
 }
 
+/* ✨ Global settings */
 html, body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
   background: var(--primary-bg);
   color: var(--text-main);
-  display: flex;              /* 💡 enables flex layout */
-  justify-content: center;    /* 💡 centers horizontally */
-  flex-direction: column;     /* vertical flow */
-  align-items: center;        /* optional: aligns children on cross-axis */
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  font-size: 100%;
+  line-height: 1.5;
+  scroll-behavior: smooth;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
 
-
+/* 🌐 Navbar */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -29,6 +38,7 @@ html, body {
   border-bottom: 1px solid var(--border-color);
   padding: 1.2em 2em;
   font-size: 1em;
+  flex-wrap: wrap;
 }
 
 .navbar-logo {
@@ -53,12 +63,15 @@ html, body {
 .navbar-links {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.5em;
 }
 
-.navbar-links a, .navbar-links button {
+.navbar-links a,
+.navbar-links button {
   color: var(--text-main);
   text-decoration: none;
-  margin-left: 1.2em;
+  margin-left: 1em;
   font-weight: 500;
   background: none;
   border: none;
@@ -66,18 +79,13 @@ html, body {
   cursor: pointer;
   transition: color 0.2s, background-color 0.2s;
   border-radius: var(--radius);
+  min-height: 40px;
 }
 
-.navbar-links a:hover, .navbar-links button:hover {
+.navbar-links a:hover,
+.navbar-links button:hover {
   color: #fff;
   background-color: #666;
-}
-
-.navbar-links button {
-  font-size: 0.9em;
-  padding: 0.4em 0.6em;
-  display: flex;
-  align-items: center;
 }
 
 .flag-icon {
@@ -88,6 +96,7 @@ html, body {
   margin-right: 0.3em;
 }
 
+/* 📦 Layout Containers */
 .container {
   max-width: 1100px;
   margin: 2em auto;
@@ -96,6 +105,7 @@ html, body {
 
 .chat-main {
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
@@ -113,7 +123,6 @@ html, body {
 }
 
 .chat-logo {
-  display: inline-block;
   width: 40px;
   height: 40px;
   background: #e0e0e0;
@@ -182,6 +191,7 @@ html, body {
   margin-right: 0.5em;
   box-sizing: border-box;
   height: 40px;
+  min-width: 0;
 }
 
 .chat-footer button {
@@ -193,11 +203,10 @@ html, body {
   font-weight: 500;
   transition: background 0.2s;
   height: 36px;
-  box-sizing: border-box;
-  min-width: 70px;       /* Starting base size */
-  max-width: 120px;      /* Prevent stretching too far */
-  width: auto;           /* Adjusts to content */
-  padding: 0.4em 1em;    /* Room for longer text */
+  min-width: 70px;
+  max-width: 120px;
+  width: auto;
+  padding: 0.4em 1em;
   font-size: 0.7em;
   line-height: 1.2;
   white-space: nowrap;
@@ -209,6 +218,7 @@ html, body {
   background: #357abd;
 }
 
+/* 📱 Chat widget */
 .chat-widget {
   max-width: 350px;
   position: fixed;
@@ -234,29 +244,39 @@ html, body {
 }
 
 .content {
-  margin-bottom: 100px; /* Prevent overlap with chat widget */
+  margin-bottom: 100px;
 }
 
+/* 📲 Media Queries for Mobile */
 @media (max-width: 900px) {
   .navbar {
     flex-direction: column;
     padding: 1em;
+    align-items: flex-start;
   }
+
   .navbar-links {
+    flex-direction: column;
+    width: 100%;
     margin-top: 1em;
   }
-  .navbar-links a, .navbar-links button {
-    margin: 0.5em 0.8em;
+
+  .navbar-links a,
+  .navbar-links button {
+    margin: 0.5em 0;
   }
+
   .chat-main {
     width: 90%;
     min-height: 450px;
   }
+
   .chat-widget {
     max-width: 90%;
     right: 5%;
     bottom: 10px;
   }
+
   .chat-widget .chat-body {
     max-height: 250px;
   }
@@ -266,5 +286,21 @@ html, body {
   .chat-footer button {
     font-size: 0.85em;
     padding: 0.3em 0.6em;
+    min-width: 64px;
+  }
+
+  .chat-title {
+    font-size: 1.5em;
+  }
+
+  .chat-subtitle {
+    font-size: 1em;
+  }
+
+  .chat-logo {
+    width: 36px;
+    height: 36px;
+    font-size: 1em;
+    line-height: 36px;
   }
 }
