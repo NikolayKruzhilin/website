@@ -1,5 +1,5 @@
 function sendMessage(message) {
-  fetch('https://11dded891c17.ngrok-free.app/webhook/portfolio-chat', {
+  fetch('https://eoc63dzqz15zwlt.m.pipedream.net', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
