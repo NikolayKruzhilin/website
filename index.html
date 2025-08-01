@@ -121,42 +121,37 @@
         userMessage.textContent = message;
         chatBody.appendChild(userMessage);
 
-        // Send message to n8n via ngrok
         fetch("https://11dded891c17.ngrok-free.app/webhook/portfolio-chat", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "ngrok-skip-browser-warning": "true"
-  },
-  body: JSON.stringify({ message })
-})
-.then(response => response.json())
-.then(data => {
-  const botMessage = document.createElement('div');
-  botMessage.className = 'chat-message bot';
-
-  // 👇 Change this line to use data.message
-  botMessage.textContent = data.message || {
-    ru: "🤖 Не удалось получить ответ от сервера",
-    en: "🤖 Failed to receive reply from server",
-    zh: "🤖 未能从服务器获取回应"
-  }[lang];
-
-  chatBody.appendChild(botMessage);
-  chatBody.scrollTop = chatBody.scrollHeight;
-})
-.catch(error => {
-  const botMessage = document.createElement('div');
-  botMessage.className = 'chat-message bot';
-  botMessage.textContent = {
-    ru: "⚠️ Ошибка подключения к серверу",
-    en: "⚠️ Server connection error",
-    zh: "⚠️ 与服务器连接错误"
-  }[lang];
-  chatBody.appendChild(botMessage);
-  console.error("Fetch error:", error);
-});
-
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true"
+          },
+          body: JSON.stringify({ message })
+        })
+        .then(response => response.json())
+        .then(data => {
+          const botMessage = document.createElement('div');
+          botMessage.className = 'chat-message bot';
+          botMessage.textContent = data.message || {
+            ru: "🤖 Не удалось получить ответ от сервера",
+            en: "🤖 Failed to receive reply from server",
+            zh: "🤖 未能从服务器获取回应"
+          }[lang];
+          chatBody.appendChild(botMessage);
+          chatBody.scrollTop = chatBody.scrollHeight;
+        })
+        .catch(error => {
+          const botMessage = document.createElement('div');
+          botMessage.className = 'chat-message bot';
+          botMessage.textContent = {
+            ru: "⚠️ Ошибка подключения к серверу",
+            en: "⚠️ Server connection error",
+            zh: "⚠️ 与服务器连接错误"
+          }[lang];
+          chatBody.appendChild(botMessage);
+          console.error("Fetch error:", error);
+        });
 
         input.value = '';
       }
@@ -166,7 +161,5 @@
       setLanguage(localStorage.getItem('language') || 'ru');
     };
   </script>
-<script src="chatbot.js"></script>
 </body>
 </html>
-
